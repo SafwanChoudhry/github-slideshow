@@ -1,0 +1,18 @@
+services:
+  web:
+    image: ruby:3.1
+    working_dir: /site
+    volumes:
+      - .:/site
+      - bundle:/usr/local/bundle
+    ports: ["3000:4000"]
+    command: ["sh","-ec","bundle config set --local path /usr/local/bundle && (bundle install || (rm -f Gemfile.lock && bundle install)) && exec bundle exec jekyll serve --host 0.0.0.0 --port 4000 --force_polling"]
+    healthcheck:
+      test: ["CMD","curl","-fsS","-m","5","http://localhost:4000/"]
+      interval: 15s
+      timeout: 8s
+      retries: 5
+      start_period: 300s
+    restart: on-failure
+volumes:
+  bundle:
